@@ -8,14 +8,14 @@ Gem::Specification.new do |spec|
   spec.version       = Fetchable::VERSION
   spec.authors       = ["Stephen Best"]
   spec.email         = ["bestie@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.summary       = %q{Provides a decorator to add a Hash#fetch style interface to any object.}
+  spec.description   = spec.summary
   spec.homepage      = ""
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
-  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
+  spec.executables   = []
+  spec.test_files    = spec.files.grep(%r{^(spec|features)/})
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "bundler", "~> 1.3"
