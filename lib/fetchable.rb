@@ -1,18 +1,16 @@
-require "delegate"
-
-class Fetchable < SimpleDelegator
-  def initialize(collection, args={})
-    @collection = collection
-    @finder_method_name = args.fetch(:finder_method, :[])
-    super(collection)
-  end
-
+module Fetchable
   def fetch(key, not_found_value = no_default_given, &block)
     if not_found_value != no_default_given && block
       raise ArgumentError.new("Cannot provide both a default arg and block to #fetch")
     end
 
-    @collection.public_send(@finder_method_name, key) || default_value(key, not_found_value, &block)
+    result = public_send(:[], key)
+
+    if result.nil?
+      default_value(key, not_found_value, &block)
+    else
+      result
+    end
   end
 
   private

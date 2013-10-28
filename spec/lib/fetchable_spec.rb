@@ -3,33 +3,18 @@ require "spec_helper"
 require "fetchable"
 
 describe Fetchable do
-  subject(:fetchable) { Fetchable.new(collection, finder_method: finder_method) }
-
-  let(:collection) {
-    double(:collection, finder_method => fetched_object)
+  subject(:fetchable) {
+    double(:fetchable, :[] => fetched_object).extend(Fetchable)
   }
 
-  let(:finder_method)  { :[] }
   let(:fetched_object) { double(:fetched_object) }
   let(:fetch_key)      { double(:fetch_key) }
 
-  it "is a true decorator" do
-    expect(collection).to receive(:arbitrary).with("an arg")
-
-    fetchable.arbitrary("an arg")
-  end
-
-  it "defaults the finder method to []" do
-    expect(
-      Fetchable.new(collection).fetch(fetch_key)
-    ).to be fetched_object
-  end
-
   describe "#fetch" do
-    it "delegates to the collection's finder method" do
+    it "delegates to the fetchable's finder method" do
       fetchable.fetch(fetch_key)
 
-      expect(collection).to have_received(finder_method).with(fetch_key)
+      expect(fetchable).to have_received(:[]).with(fetch_key)
     end
 
     context "when entry for key exists" do
@@ -39,7 +24,21 @@ describe Fetchable do
         }.not_to raise_error
       end
 
-      it "returns the entry from the collection" do
+      it "returns the entry from the fetchable" do
+        expect(fetchable.fetch(fetch_key)).to be fetched_object
+      end
+    end
+
+    context "when the enrty for the key comes back false" do
+      let(:fetched_object) { false }
+
+      it "does not execute the block" do
+        expect {
+          fetchable.fetch(fetch_key) { raise "This block must not run" }
+        }.not_to raise_error
+      end
+
+      it "returns the entry from the fetchable" do
         expect(fetchable.fetch(fetch_key)).to be fetched_object
       end
     end

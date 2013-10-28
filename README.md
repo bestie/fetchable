@@ -2,12 +2,12 @@
 
 [![Gem Version](https://badge.fury.io/rb/keyword_curry.png)](http://badge.fury.io/rb/keyword_curry)
 
-Provides a decorator to add a `Hash#fetch` like interface to any object.
+Provides a mixin to add a `Hash#fetch` like interface to any object.
 
-For extra flexibility you may specify the method used to fetch items from the
-underlying collection, the default is `[]`.
+You must define a `[]` subscript method for raw access to the fetchable data.
 
-A lambda and `call` is a fun alternative.
+Your `[]` method must return anything but nil in order for `#fetch` to consider
+a key successfully fetched. `False` is absolutely fine.
 
 `Hash#Fetch` is one of my favourite Ruby methods and can be tricky to implement
 its full behaviour so here it is extracted for you to add to whichever object
@@ -29,44 +29,56 @@ Or install it yourself as:
 
 ## Usage
 
-### Default Finder Method
+### Include into a class with a `[]` method
 
 ```ruby
 
 require "fetchable"
 
-array = ["zero", "one", "two"]
 
-fetchable_array = Fetchable.new(array)
+class Things
+  def initialize(array)
+    @array = %w(zero one two)
+  end
 
-fetchable_array.fetch(0)
+  include Fetchable
+
+  def [](index)
+    @array[index]
+  end
+end
+
+things = Things.new
+
+things.fetch(0)
  => "zero"
 
-fetchable_array.fetch(2)
+things.fetch(2)
  => "two"
 
-fetchable_array.fetch(3)
+things.fetch(3)
  => KeyError key not found 3
 
-fetchable_array.fetch(3, "three")
+things.fetch(3, "three")
  => "three"
 
-fetchable_array.fetch(3) { "Execute a block!" }
+things.fetch(3) { "Execute a block!" }
  => "Execute a block!"
 
-fetchable_array.fetch(3) { |key| "Do something based on missing key #{key}" }
+things.fetch(3) { |key| "Do something based on missing key #{key}" }
  => "Do something based on missing key 3"
 
 ```
 
-### A Custom Finder Method
+### Extend a existing object with `[]`
 
-Add fetch to lambda, a HTTP client or just about anything.
+Add fetch to arrays, lambdas, procs and method objects.
+Even a HTTP client
 
 ```ruby
 
-function = ->(key) { |key| ["zero", "one", "two"][key] }
-fetchable_function =Fetchable.new(function, :finder_method => :call)
+function = ->(key) { |key| %w(zero one two)[key] }
+fetchable_function = function.extend(Fetchable)
 
 fetchable_function.fetch(1)
  => "one"

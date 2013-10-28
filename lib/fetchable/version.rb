@@ -1,3 +1,5 @@
 require "fetchable"
 
-Fetchable::VERSION = "0.0.2"
+module Fetchable
+  VERSION = "0.0.2"
+end
