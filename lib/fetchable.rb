@@ -1,4 +1,3 @@
-require "fetchable/version"
 require "delegate"
 
 class Fetchable < SimpleDelegator
