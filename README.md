@@ -1,5 +1,7 @@
 # Fetchable
 
+[![Gem Version](https://badge.fury.io/rb/keyword_curry.png)](http://badge.fury.io/rb/keyword_curry)
+
 Provides a decorator to add a `Hash#fetch` like interface to any object.
 
 For extra flexibility you may specify the method used to fetch items from the
