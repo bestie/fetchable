@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["bestie@gmail.com"]
   spec.summary       = %q{Provides a decorator to add a Hash#fetch style interface to any object.}
   spec.description   = spec.summary
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/bestie/fetchable"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
