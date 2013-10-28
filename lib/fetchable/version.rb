@@ -1,3 +1,3 @@
-module Fetchable
-  VERSION = "0.0.1"
-end
+require "fetchable"
+
+Fetchable::VERSION = "0.0.1"
