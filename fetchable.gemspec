@@ -6,7 +6,7 @@ require 'fetchable/version'
 Gem::Specification.new do |spec|
   spec.name          = "fetchable"
   spec.version       = Fetchable::VERSION
-  spec.authors       = ["Stephen Best"]
+  spec.authors       = ["Stephen Best", "Sam Phippen"]
   spec.email         = ["bestie@gmail.com"]
   spec.summary       = %q{Provides a decorator to add a Hash#fetch style interface to any object.}
   spec.description   = spec.summary + " " + %{For extra flexibility you may specify the method used to fetch items from the underlying collection.}
