@@ -2,8 +2,10 @@
 
 Provides a decorator to add a `Hash#fetch` like interface to any object.
 
-You can specify a method which it should delegate to and pass the key, or use
-the default `[]`.
+For extra flexibility you may specify the method used to fetch items from the
+underlying collection, the default is `[]`.
+
+A lambda and `call` is a fun alternative.
 
 `Hash#Fetch` is one of my favourite Ruby methods and can be tricky to implement
 its full behaviour so here it is extracted for you to add to whichever object
