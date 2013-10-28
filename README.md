@@ -2,7 +2,8 @@
 
 Provides a decorator to add a `Hash#fetch` like interface to any object.
 
-You must specify a method which it should delegate to and pass the key.
+You can specify a method which it should delegate to and pass the key, or use
+the default `[]`.
 
 `Hash#Fetch` is one of my favourite Ruby methods and can be tricky to implement
 its full behaviour so here it is extracted for you to add to whichever object
@@ -24,12 +25,15 @@ Or install it yourself as:
 
 ## Usage
 
+### Default Finder Method
+
 ```ruby
+
 require "fetchable"
 
 array = ["zero", "one", "two"]
 
-fetchable_array = Fetchable.new(array, :finder_method => :[])
+fetchable_array = Fetchable.new(array)
 
 fetchable_array.fetch(0)
  => "zero"
@@ -48,6 +52,21 @@ fetchable_array.fetch(3) { "Execute a block!" }
 
 fetchable_array.fetch(3) { |key| "Do something based on missing key #{key}" }
  => "Do something based on missing key 3"
+
+```
+
+### A Custom Finder Method
+
+Add fetch to lambda, a HTTP client or just about anything.
+
+```ruby
+
+function = ->(key) { |key| ["zero", "one", "two"][key] }
+fetchable_function =Fetchable.new(function, :finder_method => :call)
+
+fetchable_function.fetch(1)
+ => "one"
+
 ```
 
 ## Contributing

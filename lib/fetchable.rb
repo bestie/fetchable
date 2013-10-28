@@ -2,9 +2,9 @@ require "fetchable/version"
 require "delegate"
 
 class Fetchable < SimpleDelegator
-  def initialize(collection, args)
+  def initialize(collection, args={})
     @collection = collection
-    @finder_method_name = args.fetch(:finder_method)
+    @finder_method_name = args.fetch(:finder_method, :[])
     super(collection)
   end
 

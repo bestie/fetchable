@@ -19,6 +19,12 @@ describe Fetchable do
     fetchable.arbitrary("an arg")
   end
 
+  it "defaults the finder method to []" do
+    expect(
+      Fetchable.new(collection).fetch(fetch_key)
+    ).to be fetched_object
+  end
+
   describe "#fetch" do
     it "delegates to the collection's finder method" do
       fetchable.fetch(fetch_key)
