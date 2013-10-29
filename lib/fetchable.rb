@@ -24,7 +24,7 @@ module Fetchable
       if block
         block.call(key)
       else
-        raise KeyError.new("#{key} not found in #{@collection.inspect}")
+        raise KeyError.new("key not found #{key}")
       end
     else
       not_found_value

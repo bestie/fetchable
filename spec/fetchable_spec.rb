@@ -83,7 +83,7 @@ describe Fetchable do
 
       context "no default or block given" do
         it "raises record not found" do
-          expect{ fetchable.fetch(fetch_key) }.to raise_error(KeyError)
+          expect{ fetchable.fetch(fetch_key) }.to raise_error(KeyError, "key not found #{fetch_key}")
         end
       end
     end
