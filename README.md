@@ -48,7 +48,7 @@ things.fetch(2)
  => "two"
 
 things.fetch(3)
- => KeyError key not found 3
+ => KeyError: key not found 3
 
 things.fetch(3, "three")
  => "three"
@@ -69,7 +69,7 @@ We got you covered! Use `Fetchable::Decorator` instead.
 
 require "fetchable/decorator"
 
-things = %w(zero one two).extend(Fetchable)
+things = %w(zero one two)
 
 fetchable_things = Fetchable::Decorator.new(things)
 
