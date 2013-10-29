@@ -2,16 +2,20 @@
 
 [![Gem Version](https://badge.fury.io/rb/keyword_curry.png)](http://badge.fury.io/rb/keyword_curry)
 
-Provides a mixin to add a `Hash#fetch` like interface to any object.
+Provides a mixin and decorator to add a `Hash#fetch` like interface to any object.
 
 You must define a `[]` subscript method for raw access to the fetchable data.
 
 Your `[]` method must return anything but nil in order for `#fetch` to consider
-a key successfully fetched. `False` is absolutely fine.
+a key successfully fetched. `False` is considered sucessful.
 
 `Hash#Fetch` is one of my favourite Ruby methods and can be tricky to implement
 its full behaviour so here it is extracted for you to add to whichever object
 you choose.
+
+If you're not familiar with `Hash#fetch` it's a great way to help eliminate nils
+as it raises an error when the desired key is not found. For more info consult
+[Ruby Hash documentation](http://www.ruby-doc.org/core-2.1.0/Hash.html#method-i-fetch).
 
 ## Installation
 
@@ -29,26 +33,13 @@ Or install it yourself as:
 
 ## Usage
 
-### Include into a class with a `[]` method
+### Include into a object with a `[]` method
 
 ```ruby
 
 require "fetchable"
 
-
-class Things
-  def initialize(array)
-    @array = %w(zero one two)
-  end
-
-  include Fetchable
-
-  def [](index)
-    @array[index]
-  end
-end
-
-things = Things.new
+things = %w(zero one two).extend(Fetchable)
 
 things.fetch(0)
  => "zero"
@@ -70,20 +61,32 @@ things.fetch(3) { |key| "Do something based on missing key #{key}" }
 
 ```
 
-### Extend a existing object with `[]`
+### Prefer composition over inheritance?
 
-Add fetch to arrays, lambdas, procs and method objects.
-Even a HTTP client
+We got you covered! Use `Fetchable::Decorator` instead.
 
 ```ruby
 
-function = ->(key) { |key| %w(zero one two)[key] }
-fetchable_function = function.extend(Fetchable)
+require "fetchable/decorator"
 
-fetchable_function.fetch(1)
+things = %w(zero one two).extend(Fetchable)
+
+fetchable_things = Fetchable::Decorator.new(things)
+
+fetchable_things.fetch(1)
  => "one"
 
 ```
+
+### For bonus points use lambdas
+
+Lambdas, procs and method objects can also be called with `#[]`.
+
+Why not make them fetchable?
+
+It might be funny.
+
+Dammit method, you better not return me a `nil`, I'll be so mad.
 
 ## Contributing
 
