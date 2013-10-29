@@ -8,8 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Fetchable::VERSION
   spec.authors       = ["Stephen Best", "Sam Phippen"]
   spec.email         = ["bestie@gmail.com"]
-  spec.summary       = %q{Provides a decorator to add a Hash#fetch style interface to any object.}
-  spec.description   = spec.summary + " " + %{For extra flexibility you may specify the method used to fetch items from the underlying collection.}
+
+  spec.summary       = %q{Provides a mixin and decorator to add a `Hash#fetch` like interface to any object.}
+  spec.description   = spec.summary + " " + %{You must define a `[]` subscript method for raw access to the fetchable data.}
   spec.homepage      = "https://github.com/bestie/fetchable"
   spec.license       = "MIT"
 
