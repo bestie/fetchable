@@ -1,33 +1,20 @@
 module Fetchable
-  def fetch(key, not_found_value = no_default_given, &block)
-    if not_found_value != no_default_given && block
+  NO_DEFAULT_GIVEN = Object.new
+
+  def fetch(key, not_found_value = NO_DEFAULT_GIVEN)
+    if not_found_value != NO_DEFAULT_GIVEN && block_given?
       raise ArgumentError.new("Cannot provide both a default arg and block to #fetch")
     end
 
     result = public_send(:[], key)
 
     if result.nil?
-      default_value(key, not_found_value, &block)
+      return yield(key) if block_given?
+      return not_found_value unless not_found_value == NO_DEFAULT_GIVEN
+
+      raise KeyError.new("key not found #{key}")
     else
       result
-    end
-  end
-
-  private
-
-  def no_default_given
-    @default ||= Object.new
-  end
-
-  def default_value(key, not_found_value, &block)
-    if not_found_value == no_default_given
-      if block
-        block.call(key)
-      else
-        raise KeyError.new("key not found #{key}")
-      end
-    else
-      not_found_value
     end
   end
 end
