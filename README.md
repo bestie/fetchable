@@ -1,6 +1,6 @@
 # Fetchable
 
-[![Gem Version](https://badge.fury.io/rb/keyword_curry.png)](http://badge.fury.io/rb/keyword_curry)
+[![Gem Version](https://badge.fury.io/rb/fetchable.png)](http://badge.fury.io/rb/fetchable)
 
 Provides a mixin and decorator to add a `Hash#fetch` like interface to any object.
 
