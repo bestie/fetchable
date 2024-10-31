@@ -82,30 +82,39 @@ RSpec.describe Fetchable do
       end
 
       context "when a block is given" do
-        let(:spy) { double(:spy, :block_was_called => block_return_value) }
-        let(:block) { lambda { |key| spy.block_was_called(key) } }
-        let(:block_return_value) { double(:block_return_value) }
+        let(:block) { lambda { |key| block_result } }
+        let(:block_result) { "Don't be fooled by the rocks that I got" }
 
         it "returns the result of block" do
-          expect(fetchable.fetch(key, &block)).to be block_return_value
+          expect(fetchable.fetch(key, &block)).to be block_result
         end
 
         it "yields the key to the block" do
-          fetchable.fetch(key, &block)
-          expect(spy).to have_received(:block_was_called).with(key)
+          expect { |spy_block| fetchable.fetch(key, &spy_block) }.to yield_with_args(key)
         end
       end
 
       context "no default or block given" do
         it "raises KeyError" do
-          expect{ fetchable.fetch(key) }.to raise_error(KeyError, "key not found #{key}")
+          expect{ fetchable.fetch(key) }.to raise_error(KeyError, "key not found: #{key.inspect}")
         end
       end
     end
 
     context "when both block and default argument is given" do
+      let(:value) { nil }
+      let(:block) { lambda { |key| block_result } }
+      let(:block_result) { "I'm still Jenny, Jenny from the block" }
+      let(:default) { "Lorem ipsum ..." }
+
+      it "returns the result of the block" do
+        expect(fetchable.fetch(key, default, &block)).to be block_result
+      end
+
       it "prints a warning" do
-        expect{ fetchable.fetch(key, nil) {} }.to raise_error(ArgumentError)
+        expect {
+          fetchable.fetch(key, default, &block)
+        }.to output("block supersedes default value argument\n").to_stderr
       end
     end
   end
