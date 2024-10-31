@@ -2,7 +2,7 @@ require "spec_helper"
 
 require "fetchable"
 
-describe Fetchable do
+RSpec.describe Fetchable do
   subject(:fetchable) {
     double(:fetchable, :[] => fetched_object).extend(Fetchable)
   }

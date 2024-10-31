@@ -2,7 +2,7 @@ require "spec_helper"
 
 require "fetchable/decorator"
 
-describe Fetchable::Decorator do
+RSpec.describe Fetchable::Decorator do
   subject(:fetchable) {
     Fetchable::Decorator.new(collection)
   }
