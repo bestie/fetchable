@@ -1,6 +1,7 @@
 # Fetchable
 
 [![Gem Version](https://badge.fury.io/rb/fetchable.png)](http://badge.fury.io/rb/fetchable)
+[![GitHub Actions CI](https://github.com/bestie/fetchable/actions/workflows/ci.yml/badge.svg)](https://github.com/bestie/fetchable/workflows/actions/ci.yml/badge.svg)
 
 Provides a mixin and decorator to add a `Hash#fetch` like interface to any object.
 
