@@ -3,65 +3,80 @@ require "spec_helper"
 require "fetchable"
 
 RSpec.describe Fetchable do
-  subject(:fetchable) {
-    double(:fetchable, :[] => fetched_object).extend(Fetchable)
+  subject(:fetchable) { augmented_class.new }
+
+  let(:augmented_class) {
+    key_that_has_a_value = key
+    the_value = value
+
+    Class.new do
+      include Fetchable
+
+      define_method(:[]) do |key|
+        if key == key_that_has_a_value
+          the_value
+        else
+          nil
+        end
+      end
+    end
   }
 
-  let(:fetched_object) { double(:fetched_object) }
-  let(:fetch_key)      { double(:fetch_key) }
+  let(:value) { double(:value) }
+  let(:key)   { double(:key) }
 
   describe "#fetch" do
-    it "delegates to the fetchable's finder method" do
-      fetchable.fetch(fetch_key)
+    it "calls the target object's `[]` method" do
+      expect(fetchable).to receive(:[]).with(key).and_return(value)
 
-      expect(fetchable).to have_received(:[]).with(fetch_key)
+      fetchable.fetch(key)
     end
 
-    context "when entry for key exists" do
+    context "when the `[]` method returns not `nil`" do
+      it "returns the value from the `[]` method" do
+        expect(fetchable.fetch(key)).to be value
+      end
+
       it "does not execute the block" do
         expect {
-          fetchable.fetch(fetch_key) { raise "This block must not run" }
+          fetchable.fetch(key) { raise "This block must not run" }
+        }.not_to raise_error
+      end
+    end
+
+    context "when the `[]` method returns `false`" do
+      let(:value) { false }
+
+      it "does not execute the block" do
+        expect {
+          fetchable.fetch(key) { raise "This block must not run" }
         }.not_to raise_error
       end
 
       it "returns the entry from the fetchable" do
-        expect(fetchable.fetch(fetch_key)).to be fetched_object
+        expect(fetchable.fetch(key)).to be value
       end
     end
 
-    context "when the enrty for the key comes back false" do
-      let(:fetched_object) { false }
-
-      it "does not execute the block" do
-        expect {
-          fetchable.fetch(fetch_key) { raise "This block must not run" }
-        }.not_to raise_error
-      end
-
-      it "returns the entry from the fetchable" do
-        expect(fetchable.fetch(fetch_key)).to be fetched_object
-      end
-    end
-
-    context "when entry for key does not exist" do
-      let(:fetched_object) { nil }
+    context "when `[]` returns nil" do
+      let(:value) { nil }
 
       context "when a default argument is given" do
         let(:default) { double(:default) }
 
         it "returns the default" do
-          expect(fetchable.fetch(fetch_key, default)).to be default
+          expect(fetchable.fetch(key, default)).to be default
         end
 
         context "when default argument is nil" do
           it "returns nil" do
-            expect(fetchable.fetch(fetch_key, nil)).to be nil
+            expect(fetchable.fetch(key, nil)).to be nil
           end
         end
 
         context "when default argument is false" do
           it "returns false" do
-            expect(fetchable.fetch(fetch_key, false)).to be false
+            expect(fetchable.fetch(key, false)).to be false
           end
         end
       end
@@ -72,25 +87,25 @@ RSpec.describe Fetchable do
         let(:block_return_value) { double(:block_return_value) }
 
         it "returns the result of block" do
-          expect(fetchable.fetch(fetch_key, &block)).to be block_return_value
+          expect(fetchable.fetch(key, &block)).to be block_return_value
         end
 
         it "yields the key to the block" do
-          fetchable.fetch(fetch_key, &block)
-          expect(spy).to have_received(:block_was_called).with(fetch_key)
+          fetchable.fetch(key, &block)
+          expect(spy).to have_received(:block_was_called).with(key)
         end
       end
 
       context "no default or block given" do
-        it "raises record not found" do
-          expect{ fetchable.fetch(fetch_key) }.to raise_error(KeyError, "key not found #{fetch_key}")
+        it "raises KeyError" do
+          expect{ fetchable.fetch(key) }.to raise_error(KeyError, "key not found #{key}")
         end
       end
     end
 
     context "when both block and default argument is given" do
-      it "raises ArgumentError" do
-        expect{ fetchable.fetch(fetch_key, nil) {} }.to raise_error(ArgumentError)
+      it "prints a warning" do
+        expect{ fetchable.fetch(key, nil) {} }.to raise_error(ArgumentError)
       end
     end
   end
