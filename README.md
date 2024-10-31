@@ -3,63 +3,64 @@
 [![Gem Version](https://badge.fury.io/rb/fetchable.png)](http://badge.fury.io/rb/fetchable)
 [![GitHub Actions CI](https://github.com/bestie/fetchable/actions/workflows/ci.yml/badge.svg)](https://github.com/bestie/fetchable/workflows/actions/ci.yml/badge.svg)
 
-Provides a mixin and decorator to add a `Hash#fetch` like interface to any object.
+Ruby's `Hash#fetch` is great way to handle missing data and avoid unexpected `nil` values.
 
-You must define a `[]` subscript method for raw access to the fetchable data.
+Fetchable makes it easy to add a `#fetch` method to any object that you query for data.
 
-Your `[]` method must return anything but nil in order for `#fetch` to consider
-a key successfully fetched. `False` is considered sucessful.
+Both a mixin module and a decorator is provided.
 
-`Hash#Fetch` is one of my favourite Ruby methods and can be tricky to implement
+There must be a `[]` method defined to access the underlying data.
+
+The `[]` method must return anything but nil in order for `#fetch` to consider
+a key successfully fetched. `False` is considered successful.
+
+`Hash#Fetch` is one of my favourite Ruby methods but it can be tricky to implement
 its full behaviour so here it is extracted for you to add to whichever object
 you choose.
 
-If you're not familiar with `Hash#fetch` it's a great way to help eliminate nils
-as it raises an error when the desired key is not found. For more info consult
-[Ruby Hash documentation](http://www.ruby-doc.org/core-2.1.0/Hash.html#method-i-fetch).
+For details on Ruby's `Hash#fetch`, you can read some documentation
+[Ruby Hash documentation](https://ruby-doc.org/3.3.5/Hash.html#method-i-fetch).
 
-## Installation
-
-Add this line to your application's Gemfile:
-
-    gem 'fetchable'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install fetchable
+It's also available on `Array` 🤯
+[Ruby Array documentation](https://ruby-doc.org/3.3.5/Array.html#method-i-fetch)
 
 ## Usage
 
-### Include into a object with a `[]` method
+### Mixin to your own class
 
 ```ruby
-
 require "fetchable"
 
-things = %w(zero one two).extend(Fetchable)
+class MyDataSource
+  include Fetchable
 
-things.fetch(0)
- => "zero"
+  # ...
 
-things.fetch(2)
- => "two"
+  def [](key)
+    external_datasource.get(key)
+  end
+end
+```
 
-things.fetch(3)
- => KeyError: key not found 3
+### Extend an object with a `[]` method
 
-things.fetch(3, "three")
- => "three"
+```ruby
+require "fetchable"
 
-things.fetch(3) { "Execute a block!" }
- => "Execute a block!"
+Thing = Struct.new(:a, :b)
 
-things.fetch(3) { |key| "Do something based on missing key #{key}" }
- => "Do something based on missing key 3"
+a_thing = Thing.new("foo", "bar")
 
+a_thing[:c]
+# => nil
+
+a_thing.extend(Fetchable)
+
+a_thing.fetch(:c)
+# => KeyError: key not found c
+
+a_thing.fetch(:c) { |key| "Generate a value from #{key}" }
+ => "Generate a value from c"
 ```
 
 ### Prefer composition over inheritance?
@@ -67,16 +68,16 @@ things.fetch(3) { |key| "Do something based on missing key #{key}" }
 We got you covered! Use `Fetchable::Decorator` instead.
 
 ```ruby
-
 require "fetchable/decorator"
 
-things = %w(zero one two)
+Thing = Struct.new(:a, :b)
 
-fetchable_things = Fetchable::Decorator.new(things)
+a_thing = MyStruct.new("foo", "bar")
 
-fetchable_things.fetch(1)
- => "one"
+fetchable_thing = Fetchable::Decorator.new(a_thing)
 
+fetchable_thing.fetch(:a)
+# => "foo
 ```
 
 ### For bonus points use lambdas
@@ -92,7 +93,5 @@ Dammit method, you better not return me a `nil`, I'll be so mad.
 ## Contributing
 
 1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+2. Crate a pull request
+3. Be nice
